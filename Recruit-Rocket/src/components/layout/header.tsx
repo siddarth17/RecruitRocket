@@ -1,4 +1,4 @@
-import CurrentUser from './current-user'
+/* import CurrentUser from './current-user'
 
 const Header = () => {
   return (
@@ -8,4 +8,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default Header */

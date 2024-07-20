@@ -1,10 +1,10 @@
 import React from 'react'
 import CustomAvatar from '../custom-avatar'
 import { useGetIdentity } from '@refinedev/core'
-import type { User } from '@/graphql/schema.types'
+// import type { User } from '@/graphql/schema.types'
 
 
-import {Popover, Button} from 'antd'
+/* import {Popover, Button} from 'antd'
 
 const CurrentUser = () => {
   const { data: user } = useGetIdentity<User>();
@@ -23,4 +23,4 @@ const CurrentUser = () => {
   );
 };
 
-export default CurrentUser;
+export default CurrentUser; */
