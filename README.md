@@ -6,7 +6,7 @@
 To run this application using Docker, execute the following command:
 
 ```bash
-docker pull shadowtech17/recruitrocket:1.0.0
+docker build -t shadowtech17/recruitrocket:1.0.0 .
 docker run -p 8000:3000 shadowtech17/recruitrocket:1.0.0
 
 **Access the Application**:
