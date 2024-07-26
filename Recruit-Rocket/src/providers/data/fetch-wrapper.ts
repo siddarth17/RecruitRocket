@@ -21,16 +21,22 @@ const customFetch = async (url: string, options: RequestInit) => {
 };
 
 export const fetchWrapper = async (url: string, options: RequestInit) => {
+  console.log("Fetch request:", url, options); // Log the request
   const response = await customFetch(url, options);
-
+  
+  console.log("Fetch response status:", response.status); // Log the response status
+  
   const responseClone = response.clone();
   const body = await responseClone.json();
+  console.log("Fetch response body:", body); // Log the response body
+  
   const error = getGraphQLErrors(body);
-
+  
   if (error) {
+    console.error("GraphQL error:", error); // Log any GraphQL errors
     throw error;
   }
-
+  
   return response;
 };
 
