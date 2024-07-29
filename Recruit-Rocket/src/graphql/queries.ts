@@ -233,6 +233,15 @@ export const TASKS_QUERY = gql`
   }
 `;
 
+export const DASHBOARD_APPLICANT_COUNTS_QUERY = gql`
+  query GetApplicantCounts {
+    totalApplicants
+    acceptedApplicants
+    consideringApplicants
+    rejectedApplicants
+  }
+`;
+
 // Query to get task stages for select
 export const TASK_STAGES_SELECT_QUERY = gql`
   query TaskStagesSelect(

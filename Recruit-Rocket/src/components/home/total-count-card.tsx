@@ -5,7 +5,7 @@ import { Text } from '../text'
 import { Area, AreaConfig } from '@ant-design/plots'
 
 type Props = {
-    resource: "companies" | "contacts" | "deals",
+    resource: "total" | "accepted" | "considering" | "rejected",
     isLoading: boolean,
     totalCount?: number 
 }

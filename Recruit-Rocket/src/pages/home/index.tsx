@@ -1,8 +1,9 @@
 import { Col, Row } from "antd"
-import { DashboardTotalCountCard, DealsChart, LatestActivities, UpcomingEvents } from "@/components"
+import { DashboardTotalCountCard, ApplicantPieChart, DealsChart, LatestActivities, UpcomingEvents } from "@/components"
 import { DASHBOARD_TOTAL_COUNTS_QUERY } from "@/graphql/queries"
 import { useCustom } from "@refinedev/core"
 import { DashboardTotalCountsQuery } from "@/graphql/types"
+import { TotalCountType } from '@/constants';
 
 export const Home = () => {
     const { data, isLoading } = useCustom<DashboardTotalCountsQuery> ({
@@ -13,56 +14,65 @@ export const Home = () => {
         }
     })
 
+    const cardTypes: TotalCountType[] = ['total', 'accepted', 'considering', 'rejected'];
+
     return(
         <div>
-            <Row gutter={[32, 32]}>
-                <Col xs={24} sm={24} xl={8}>
+            <Row gutter={[16, 16]}>
+                <Col xs={24} sm={24} xl={6}>
                     <DashboardTotalCountCard 
-                         resource="companies"
+                         resource="total"
                          isLoading={isLoading}
                          totalCount={data?.data.companies.totalCount}
                     />
                 </Col>
-                <Col xs={24} sm={24} xl={8}>
+                <Col xs={24} sm={24} xl={6}>
                     <DashboardTotalCountCard 
-                         resource="contacts"
+                         resource="accepted"
                          isLoading={isLoading}
                          totalCount={data?.data.contacts.totalCount}
                     />
                 </Col>
-                <Col xs={24} sm={24} xl={8}>
+                <Col xs={24} sm={24} xl={6}>
                     <DashboardTotalCountCard 
-                         resource="deals"
+                         resource="considering"
+                         isLoading={isLoading}
+                         totalCount={data?.data.deals.totalCount}
+                    />
+                </Col>
+                <Col xs={24} sm={24} xl={6}>
+                    <DashboardTotalCountCard 
+                         resource="rejected"
                          isLoading={isLoading}
                          totalCount={data?.data.deals.totalCount}
                     />
                 </Col>
             </Row>
             <Row
-              gutter={[32, 32]}
-              style={{
-                marginTop: '32px'
-              }}
+                gutter={[32, 32]}
+                style={{
+                    marginTop: '32px'
+                }}
             >
                 <Col
-                  xs = {24}
-                  sm = {24}
-                  xl = {8}
-                  style = {{
-                    height: '460px'
-                  }}
+                    xs={24}
+                    sm={24}
+                    xl={8}
+                    style={{
+                        height: '460px'
+                    }}
                 >
-                   <UpcomingEvents />
+                    <UpcomingEvents />
                 </Col>
                 <Col
-                  xs = {24}
-                  sm = {24}
-                  xl = {16}
-                  style = {{
-                    height: '460px'
-                  }}
+                    xs={24}
+                    sm={24}
+                    xl={16}
+                    style={{
+                        height: '460px'
+                    }}
                 >
-                    <DealsChart />
+                    <ApplicantPieChart />
                 </Col>
             </Row>
 

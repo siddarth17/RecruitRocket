@@ -28,7 +28,7 @@ import {
   Industry,
 } from "@/graphql/schema.types";
 
-export type TotalCountType = "companies" | "contacts" | "deals";
+export type TotalCountType = "total" | "accepted" | "considering" | "rejected";
 
 export const totalCountVariants: {
   [key in TotalCountType]: {
@@ -39,7 +39,7 @@ export const totalCountVariants: {
     data: { index: string; value: number }[];
   };
 } = {
-  companies: {
+  total: {
     primaryColor: "#1677FF",
     secondaryColor: "#BAE0FF",
     icon: (
@@ -52,7 +52,7 @@ export const totalCountVariants: {
         />
       </IconWrapper>
     ),
-    title: "Number of companies",
+    title: "Total Applicants",
     data: [
       {
         index: "1",
@@ -76,7 +76,7 @@ export const totalCountVariants: {
       },
     ],
   },
-  contacts: {
+  accepted: {
     primaryColor: "#52C41A",
     secondaryColor: "#D9F7BE",
     icon: (
@@ -89,7 +89,7 @@ export const totalCountVariants: {
         />
       </IconWrapper>
     ),
-    title: "Number of contacts",
+    title: "Total Acceptances",
     data: [
       {
         index: "1",
@@ -117,7 +117,7 @@ export const totalCountVariants: {
       },
     ],
   },
-  deals: {
+  considering: {
     primaryColor: "#FA541C",
     secondaryColor: "#FFD8BF",
     icon: (
@@ -130,7 +130,7 @@ export const totalCountVariants: {
         />
       </IconWrapper>
     ),
-    title: "Total deals in pipeline",
+    title: "Total Considerations",
     data: [
       {
         index: "1",
@@ -163,6 +163,47 @@ export const totalCountVariants: {
       {
         index: "8",
         value: 1800,
+      },
+    ],
+  },
+  rejected: {
+    primaryColor: "#52C41A",
+    secondaryColor: "#D9F7BE",
+    icon: (
+      <IconWrapper color="#F6FFED">
+        <TeamOutlined
+          className="md"
+          style={{
+            color: "#52C41A",
+          }}
+        />
+      </IconWrapper>
+    ),
+    title: "Total Rejections",
+    data: [
+      {
+        index: "1",
+        value: 10000,
+      },
+      {
+        index: "2",
+        value: 19500,
+      },
+      {
+        index: "3",
+        value: 13000,
+      },
+      {
+        index: "4",
+        value: 17000,
+      },
+      {
+        index: "5",
+        value: 13000,
+      },
+      {
+        index: "6",
+        value: 20000,
       },
     ],
   },

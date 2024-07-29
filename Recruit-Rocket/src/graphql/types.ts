@@ -239,6 +239,13 @@ export type TasksQuery = {
   };
 };
 
+export type DashboardApplicantCountsQuery = {
+  totalApplicants: number;
+  acceptedApplicants: number;
+  consideringApplicants: number;
+  rejectedApplicants: number;
+};
+
 export type TaskStagesSelectQueryVariables = Types.Exact<{
   filter: Types.TaskStageFilter;
   sorting?: Types.InputMaybe<Array<Types.TaskStageSort> | Types.TaskStageSort>;
