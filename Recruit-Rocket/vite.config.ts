@@ -8,4 +8,8 @@ export default defineConfig({
     outDir: 'dist',  
   },
   base: '/', 
+  json: {
+    stringify: true,
+  },
+  assetsInclude: ['**/*.json'],
 });

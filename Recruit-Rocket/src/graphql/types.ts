@@ -257,3 +257,73 @@ export type TaskStagesSelectQuery = {
     nodes: Array<Pick<Types.TaskStage, "id" | "title">>;
   };
 };
+
+// Define the Applicant and Stage types
+export type Stage = {
+  stage_name: string;
+  stage_evaluators: string[];
+  notes: string;
+  performance: number;
+};
+
+export type Applicant = {
+  id: string;
+  name: string;
+  status: "rejected" | "considering" | "accepted";
+  strength: number;
+  evaluators: string[];
+  stages: Stage[];
+  imageUrl: string;
+  year: number;
+  major: string;
+  gender: string;
+  summary: string;
+};
+
+// Update mutations
+export type UpdateApplicantMutationVariables = Types.Exact<{
+  input: Types.UpdateOneApplicantInput;
+}>;
+
+export type UpdateApplicantMutation = {
+  updateOneApplicant: Pick<
+    Types.Applicant,
+    "id" | "name" | "status" | "strength" | "imageUrl" | "year" | "major" | "gender" | "summary"
+  > & {
+    evaluators: string[];
+    stages: Stage[];
+  };
+};
+
+export type CreateApplicantMutationVariables = Types.Exact<{
+  input: Types.CreateOneApplicantInput;
+}>;
+
+export type CreateApplicantMutation = {
+  createOneApplicant: Pick<
+    Types.Applicant,
+    "id" | "name" | "status" | "strength" | "imageUrl" | "year" | "major" | "gender" | "summary"
+  > & {
+    evaluators: string[];
+    stages: Stage[];
+  };
+};
+
+// Update queries
+export type GetApplicantsQueryVariables = Types.Exact<{
+  filter: Types.ApplicantFilter;
+  sorting?: Types.InputMaybe<Array<Types.ApplicantSort> | Types.ApplicantSort>;
+  paging: Types.OffsetPaging;
+}>;
+
+export type GetApplicantsQuery = {
+  applicants: Pick<Types.ApplicantConnection, "totalCount"> & {
+    nodes: Array<Pick<
+      Types.Applicant,
+      "id" | "name" | "status" | "strength" | "imageUrl" | "year" | "major" | "gender" | "summary"
+    > & {
+      evaluators: string[];
+      stages: Stage[];
+    }>;
+  };
+};

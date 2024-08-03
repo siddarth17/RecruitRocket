@@ -258,3 +258,34 @@ export const TASK_STAGES_SELECT_QUERY = gql`
     }
   }
 `;
+
+// Query to get the list of applicants
+export const GET_APPLICANTS_QUERY = gql`
+  query GetApplicants(
+    $filter: ApplicantFilter!
+    $sorting: [ApplicantSort!]
+    $paging: OffsetPaging!
+  ) {
+    applicants(filter: $filter, sorting: $sorting, paging: $paging) {
+      totalCount
+      nodes {
+        id
+        name
+        status
+        strength
+        imageUrl
+        year
+        major
+        gender
+        summary
+        evaluators
+        stages {
+          stage_name
+          stage_evaluators
+          notes
+          performance
+        }
+      }
+    }
+  }
+`;

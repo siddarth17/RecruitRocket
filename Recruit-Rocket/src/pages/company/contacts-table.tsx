@@ -200,3 +200,73 @@ export const CompanyContactsTable = () => {
     </Card>
   );
 };
+// import React from "react";
+// import { useTable, List, Table, TextField } from "@pankod/refine-antd";
+// import { useMany } from "@pankod/refine-core";
+// import { Applicant } from "../../graphql/types";
+// import applicantsData from "../../mocks/mock-applicants";
+
+// const typedApplicantsData: Applicant[] = applicantsData;
+
+// export const CompanyContactsTable: React.FC = () => {
+//   const { tableProps } = useTable<Applicant>({
+//     dataSource: typedApplicantsData,
+//     initialSorter: [
+//       {
+//         field: "createdAt",
+//         order: "desc",
+//       },
+//     ],
+//   });
+
+//   const evaluatorIds = tableProps?.dataSource?.flatMap(item => item.evaluators) ?? [];
+//   const { data: evaluatorData, isLoading: evaluatorLoading } = useMany({
+//     resource: "users",
+//     ids: evaluatorIds,
+//   });
+
+//   const evaluatorMap = evaluatorData?.data?.reduce((acc: Record<string, string>, evaluator) => {
+//     acc[evaluator.id] = evaluator.name;
+//     return acc;
+//   }, {});
+
+//   return (
+//     <List>
+//       <Table {...tableProps} rowKey="id">
+//         <Table.Column dataIndex="name" title="Name" render={(value) => <TextField value={value} />} />
+//         <Table.Column dataIndex="status" title="Status" render={(value) => <TextField value={value} />} />
+//         <Table.Column dataIndex="strength" title="Strength" render={(value) => <TextField value={value} />} />
+//         <Table.Column dataIndex="imageUrl" title="Image" render={(value) => <img src={value} alt="Applicant" width={50} />} />
+//         <Table.Column dataIndex="year" title="Year" render={(value) => <TextField value={value} />} />
+//         <Table.Column dataIndex="major" title="Major" render={(value) => <TextField value={value} />} />
+//         <Table.Column dataIndex="gender" title="Gender" render={(value) => <TextField value={value} />} />
+//         <Table.Column dataIndex="summary" title="Summary" render={(value) => <TextField value={value} />} />
+//         <Table.Column
+//           dataIndex="evaluators"
+//           title="Evaluators"
+//           render={(evaluators: string[]) =>
+//             evaluatorLoading ? (
+//               "Loading..."
+//             ) : (
+//               evaluators.map(id => <div key={id}>{evaluatorMap?.[id]}</div>)
+//             )
+//           }
+//         />
+//         <Table.Column
+//           dataIndex="stages"
+//           title="Stages"
+//           render={(stages: Applicant["stages"]) =>
+//             stages.map(stage => (
+//               <div key={stage.stage_name}>
+//                 <div>Stage: {stage.stage_name}</div>
+//                 <div>Evaluators: {stage.stage_evaluators.join(", ")}</div>
+//                 <div>Notes: {stage.notes}</div>
+//                 <div>Performance: {stage.performance}</div>
+//               </div>
+//             ))
+//           }
+//         />
+//       </Table>
+//     </List>
+//   );
+// };
