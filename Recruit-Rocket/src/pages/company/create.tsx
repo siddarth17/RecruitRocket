@@ -1,86 +1,77 @@
-import SelectOptionWithAvatar from "@/components/select-option-with-avatar";
-import { CREATE_COMPANY_MUTATION } from "@/graphql/mutations";
-import { USERS_SELECT_QUERY } from "@/graphql/queries";
-import { UsersSelectQuery } from "@/graphql/types";
-import { CompanyList } from "@/pages/company/list";
-import { useModalForm, useSelect } from "@refinedev/antd";
-import { useGo } from "@refinedev/core";
-import { GetFieldsFromList } from "@refinedev/nestjs-query";
-import { Form, Input, Modal, Select } from "antd";
+import React from 'react';
+import { Form, Input, Modal, Select, InputNumber, Space, Button } from "antd";
+import { Applicant } from '@/graphql/types';
 
-const Create = () => {
-    const go = useGo();
+interface CreateApplicantProps {
+    visible: boolean;
+    onCancel: () => void;
+    onCreateSuccess: (newApplicant: Applicant) => void;
+  }
+  
+  const CreateApplicant: React.FC<CreateApplicantProps> = ({ visible, onCancel, onCreateSuccess }) => {
+    const [form] = Form.useForm();
+  
+    const onFinish = (values: any) => {
+      const newApplicant: Applicant = {
+        id: Math.floor(Math.random() * 1000000).toString(), // Generate a smaller, string ID
+        name: values.name,
+        status: values.status as Applicant['status'],
+        strength: Number(values.strength),
+        stages: [],
+        imageUrl: values.imageUrl,
+        year: Number(values.year),
+        major: values.major,
+        gender: values.gender,
+        summary: values.summary
+      };
+      onCreateSuccess(newApplicant);
+      form.resetFields();
+    };
 
-    const goToListPage = () => {
-        go({
-            to: { resource: 'companies', action: 'list' },
-            options: { keepQuery: true },
-            type: 'replace',
-        })
-    }
+  return (
+    <Modal
+      visible={visible}
+      onCancel={onCancel}
+      title="Create Applicant"
+      footer={null}
+    >
+      <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="status" label="Status" rules={[{ required: true }]}>
+          <Select>
+            <Select.Option value="rejected">Rejected</Select.Option>
+            <Select.Option value="considering">Considering</Select.Option>
+            <Select.Option value="accepted">Accepted</Select.Option>
+          </Select>
+        </Form.Item>
+        <Form.Item name="strength" label="Strength" rules={[{ required: true }]}>
+          <InputNumber min={0} max={100} />
+        </Form.Item>
+        <Form.Item name="imageUrl" label="Image URL" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="year" label="Year" rules={[{ required: true }]}>
+          <InputNumber min={1} max={5} />
+        </Form.Item>
+        <Form.Item name="major" label="Major" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="summary" label="Summary" rules={[{ required: true }]}>
+          <Input.TextArea rows={4} />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Create
+          </Button>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};
 
-    const { formProps, modalProps } = useModalForm({
-        action: 'create',
-        defaultVisible: true,
-        resource: 'companies',
-        redirect: false,
-        mutationMode: 'pessimistic',
-        onMutationSuccess: goToListPage,
-        meta: {
-            gqlMutation: CREATE_COMPANY_MUTATION
-        }
-    })
-
-    const { selectProps, queryResult } = useSelect<GetFieldsFromList<UsersSelectQuery>>({
-        resource: 'users',
-        optionLabel: 'name',
-        meta: {
-            gqlQuery: USERS_SELECT_QUERY
-        }
-    })
-    
-    return (
-        <CompanyList >
-            <Modal
-                {...modalProps}
-                mask={true}
-                onCancel={goToListPage}
-                title="Create Company"
-                width={512}
-            >
-                <Form {...formProps} layout="vertical">
-                    <Form.Item
-                        label="Company name"
-                        name="name"
-                        rules={[{ required: true }]}
-                    >
-                        <Input placeholder="Please enter a company name" />
-                    </Form.Item>
-                    <Form.Item
-                        label="Sales owner"
-                        name="salesOwnerId"
-                        rules={[{ required: true }]}
-                    >
-                        <Select 
-                            placeholder="Please select a sales owner"
-                            {...selectProps}
-                            options={
-                                queryResult.data?.data.map((user) => ({
-                                    value: user.id,
-                                    label: (
-                                        <SelectOptionWithAvatar
-                                            name={user.name}
-                                            avatarUrl={user.avatarUrl ?? undefined}
-                                        />
-                                    )
-                            })) ?? []
-                        }
-                        />
-                    </Form.Item>
-                </Form>
-            </Modal>
-        </CompanyList>
-    )
-}
-
-export default Create
+export default CreateApplicant;

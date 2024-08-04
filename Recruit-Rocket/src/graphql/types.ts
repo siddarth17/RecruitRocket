@@ -271,7 +271,6 @@ export type Applicant = {
   name: string;
   status: "rejected" | "considering" | "accepted";
   strength: number;
-  evaluators: string[];
   stages: Stage[];
   imageUrl: string;
   year: number;

@@ -6,7 +6,7 @@ import { useNotificationProvider } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
 
 import { authProvider, dataProvider, liveProvider } from "./providers";
-import {Home, ForgotPassword, Login, Register, CompanyList} from "./pages";
+import { Home, ForgotPassword, Login, Register, CompanyList, ApplicantEditPage } from "./pages";
 import routerBindings, {
   CatchAllNavigate,
   DocumentTitleHandler,
@@ -18,37 +18,51 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import Layout from "./components/layout" 
 import { resources } from "./config/resources";
 import Create from "./pages/company/create";
-import Edit from "./pages/company/edit";
-
+import { useState } from "react";
 
 function App() {
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+
+  const handleCreateSuccess = (newApplicant: any) => {
+    // Handle the new applicant creation
+    setIsCreateModalVisible(false);
+  };
+
   return (
     <BrowserRouter>
       <GitHubBanner />
       <RefineKbarProvider>
-          <AntdApp>
-            <DevtoolsProvider>
-              <Refine
-                dataProvider={dataProvider}
-                liveProvider={liveProvider}
-                notificationProvider={useNotificationProvider}
-                routerProvider={routerBindings}
-                authProvider={authProvider}
-                resources={resources}
-                options={{
-                  syncWithLocation: true,
-                  warnWhenUnsavedChanges: true,
-                  useNewQueryKeys: true,
-                  projectId: "QFnXRZ-1ltB75-201ZGF",
-                  liveMode: "auto",
-                }}
-              >
-                <Routes>
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} /> 
-                  <Route
-                    element={
+        <AntdApp>
+          <DevtoolsProvider>
+            <Refine
+              dataProvider={dataProvider}
+              liveProvider={liveProvider}
+              notificationProvider={useNotificationProvider}
+              routerProvider={routerBindings}
+              authProvider={authProvider}
+              resources={[
+                {
+                  name: "companies",
+                  list: "/companies",
+                  create: "/companies/create",
+                  edit: "/companies/edit/:id",
+                  show: "/companies/show/:id",
+                },
+              ]}
+              options={{
+                syncWithLocation: true,
+                warnWhenUnsavedChanges: true,
+                useNewQueryKeys: true,
+                projectId: "QFnXRZ-1ltB75-201ZGF",
+                liveMode: "auto",
+              }}
+            >
+              <Routes>
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} /> 
+                <Route
+                  element={
                     <Authenticated
                       key="authenticated-layout"
                       fallback={<CatchAllNavigate to="/login" />}
@@ -57,22 +71,30 @@ function App() {
                         <Outlet />
                       </Layout> 
                     </Authenticated>
-                    }>
-                      <Route index element={<Home />} />
-                      <Route path="/companies" >
-                        <Route index element={<CompanyList />} />
-                        <Route path="new" element={<Create />} />
-                        <Route path="edit/:id" element={<Edit />} />
-                      </Route>
+                  }
+                >
+                  <Route index element={<Home />} />
+                  <Route path="/companies">
+                    <Route index element={<CompanyList />} />
+                    <Route path="create" element={
+                      <Create
+                        visible={isCreateModalVisible}
+                        onCancel={() => setIsCreateModalVisible(false)}
+                        onCreateSuccess={handleCreateSuccess}
+                      />
+                    } />
+                    <Route path="edit/:id" element={<ApplicantEditPage />} />
+                    <Route path="show/:id" element={<ApplicantEditPage />} />
                   </Route>
-                </Routes>
-                <RefineKbar />
-                <UnsavedChangesNotifier />
-                <DocumentTitleHandler />
-              </Refine>
-              <DevtoolsPanel />
-            </DevtoolsProvider>
-          </AntdApp>
+                </Route>
+              </Routes>
+              <RefineKbar />
+              <UnsavedChangesNotifier />
+              <DocumentTitleHandler />
+            </Refine>
+            <DevtoolsPanel />
+          </DevtoolsProvider>
+        </AntdApp>
       </RefineKbarProvider>
     </BrowserRouter>
   );
