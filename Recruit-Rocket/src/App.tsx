@@ -6,7 +6,7 @@ import { useNotificationProvider } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
 
 import { authProvider, dataProvider, liveProvider } from "./providers";
-import { Home, ForgotPassword, Login, Register, CompanyList, ApplicantEditPage } from "./pages";
+import { Home, ForgotPassword, Login, Register, CompanyList, ApplicantEditPage, Values } from "./pages";
 import routerBindings, {
   CatchAllNavigate,
   DocumentTitleHandler,
@@ -30,7 +30,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      <GitHubBanner />
       <RefineKbarProvider>
         <AntdApp>
           <DevtoolsProvider>
@@ -47,6 +46,10 @@ function App() {
                   create: "/companies/create",
                   edit: "/companies/edit/:id",
                   show: "/companies/show/:id",
+                },
+                {
+                  name: "values",
+                  list: "/values",
                 },
               ]}
               options={{
@@ -86,6 +89,7 @@ function App() {
                     <Route path="edit/:id" element={<ApplicantEditPage />} />
                     <Route path="show/:id" element={<ApplicantEditPage />} />
                   </Route>
+                  <Route path="/values" element={<Values />} />
                 </Route>
               </Routes>
               <RefineKbar />
