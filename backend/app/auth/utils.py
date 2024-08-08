@@ -28,14 +28,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
+        collection = await get_collection()
+        user = await collection.find_one({"email": email})
+        if user is None:
+            raise credentials_exception
+        return UserInDB(**user)
     except JWTError:
+        logger.error("JWT validation failed")
         raise credentials_exception
-    
-    collection = await get_collection()
-    user = await collection.find_one({"email": email})
-    if user is None:
-        raise credentials_exception
-    return UserInDB(**user)
 
 def create_access_token(data: dict):
     to_encode = data.copy()
