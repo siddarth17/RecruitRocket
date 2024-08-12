@@ -84,7 +84,7 @@ export const authProvider: AuthBindings = {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/user/me", {
+        const response = await axios.get("http://127.0.0.1:8000/auth/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.status === 200) {

@@ -56,11 +56,11 @@ export const CompanyList: React.FC<React.PropsWithChildren> = ({ children }) => 
             title="Status"
             render={(value) => <Text>{value}</Text>}
           />
-          <Table.Column<Applicant>
+          {/* <Table.Column<Applicant>
             dataIndex="imageUrl"
             title="Image"
             render={(value) => <Image src={value} alt="Applicant" width={50} />}
-          />
+          /> */}
           <Table.Column<Applicant>
             dataIndex="stages"
             title="Evaluators"
