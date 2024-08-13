@@ -8,6 +8,7 @@ from app.database import get_database
 from datetime import datetime, timedelta
 from app.database import get_collection
 import logging
+
 logger = logging.getLogger(__name__)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
@@ -34,9 +35,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         user = await collection.find_one({"email": email})
         if user is None:
             raise credentials_exception
-        return UserInDB(**user)
+        return UserInDB(id=str(user['_id']), email=user['email'], hashed_password=user['hashed_password'])
     except JWTError:
-        logger.error("JWT validation failed")
         raise credentials_exception
 
 def create_access_token(data: dict):
@@ -49,6 +49,11 @@ def create_access_token(data: dict):
 async def authenticate_user(email: str, password: str):
     collection = await get_collection()
     user = await collection.find_one({"email": email})
-    if not user or not verify_password(password, user["hashed_password"]):
+    print(f"User found: {user is not None}")  # Logging
+    if not user:
+        return False
+    password_verified = verify_password(password, user["hashed_password"])
+    print(f"Password verified: {password_verified}")  # Logging
+    if not password_verified:
         return False
     return UserInDB(**user)

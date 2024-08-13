@@ -4,32 +4,25 @@ import axios from "axios";
 export const authProvider: AuthBindings = {
   login: async ({ email, password }) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/auth/login", { username: email, password }, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
+      const response = await axios.post("http://127.0.0.1:8000/auth/login", 
+        { username: email, password }, 
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+      );
       
       if (response.status === 200) {
         localStorage.setItem("token", response.data.access_token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
         return {
           success: true,
           redirectTo: "/",
         };
       } else {
-        return {
-          success: false,
-          error: {
-            name: "LoginError",
-            message: "Invalid email or password",
-          },
-        };
+        throw new Error("Login failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
-        error: {
-          name: "LoginError",
-          message: "An error occurred during login",
-        },
+        error: new Error(error.response?.data?.detail || "Invalid email or password"),
       };
     }
   },
@@ -63,6 +56,7 @@ export const authProvider: AuthBindings = {
   },
   logout: async () => {
     localStorage.removeItem("token");
+    axios.defaults.headers.common['Authorization'] = "";
     return {
       success: true,
       redirectTo: "/login",
@@ -71,12 +65,18 @@ export const authProvider: AuthBindings = {
   check: async () => {
     const token = localStorage.getItem("token");
     if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       return {
         authenticated: true,
       };
     }
     return {
       authenticated: false,
+      error: {
+        message: "Check failed",
+        name: "Token not found",
+      },
+      logout: true,
       redirectTo: "/login",
     };
   },

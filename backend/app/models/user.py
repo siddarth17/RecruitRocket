@@ -1,22 +1,21 @@
 from pydantic import BaseModel, EmailStr
+from typing import Optional
 
-class User(BaseModel):
+class UserBase(BaseModel):
     email: EmailStr
+
+class User(UserBase):
     password: str
 
-class UserCreate(BaseModel):
-    email: EmailStr
+class UserCreate(UserBase):
     password: str
 
-class UserLogin(BaseModel):
-    email: EmailStr
+class UserLogin(UserBase):
     password: str
 
-class UserInDB(BaseModel):
-    id: str
-    email: EmailStr
+class UserInDB(UserBase):
+    id: Optional[str] = None
     hashed_password: str
 
-class UserOut(BaseModel):
-    id: str
-    email: EmailStr
+class UserOut(UserBase):
+    id: Optional[str] = None
