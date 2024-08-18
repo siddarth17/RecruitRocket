@@ -74,6 +74,30 @@ export const CREATE_TASK_MUTATION = gql`
   }
 `;
 
+export const CREATE_EVENT_MUTATION = gql`
+  mutation CreateOneEvent($input: CreateOneEventInput!) {
+    createOneEvent(input: $input) {
+      id
+      title
+      startDate
+      endDate
+      description
+      categoryId
+      participantIds
+      color
+      userId
+    }
+  }
+`;
+
+export const DELETE_EVENT_MUTATION = gql`
+  mutation DeleteEvent($id: ID!) {
+    deleteOneEvent(id: $id) {
+      id
+    }
+  }
+`;
+
 // Mutation to update a task details
 export const UPDATE_TASK_MUTATION = gql`
   mutation UpdateTask($input: UpdateOneTaskInput!) {

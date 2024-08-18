@@ -15,6 +15,22 @@ export const DASHBOARD_TOTAL_COUNTS_QUERY = gql`
   }
 `;
 
+export const GET_EVENTS_QUERY = gql`
+  query GetUserEvents($userId: String!) {
+    getUserEvents(userId: $userId) {
+      id
+      title
+      startDate
+      endDate
+      description
+      categoryId
+      participantIds
+      color
+      userId
+    }
+  }
+`;
+
 // Query to get upcoming events
 export const DASHBORAD_CALENDAR_UPCOMING_EVENTS_QUERY = gql`
   query DashboardCalendarUpcomingEvents(
@@ -105,11 +121,7 @@ export const DASHBOARD_LATEST_ACTIVITIES_AUDITS_QUERY = gql`
         action
         targetEntity
         targetId
-        changes {
-          field
-          from
-          to
-        }
+        changes 
         createdAt
         user {
           id

@@ -4,6 +4,8 @@ from app.models.user import UserCreate, UserOut, UserInDB
 from app.database import get_collection
 from app.auth.utils import create_access_token, get_password_hash, authenticate_user, get_current_user
 from bson import ObjectId
+from app.database import get_users_collection
+
 import logging
 
 logger = logging.getLogger(__name__)

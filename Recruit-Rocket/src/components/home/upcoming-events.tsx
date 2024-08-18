@@ -1,10 +1,11 @@
-import { Badge, Card, List, Button, Modal, Form, Input, DatePicker, Popconfirm } from 'antd'
-import React, { useState } from 'react'
+import { Badge, Card, List, Button, Modal, Form, Input, DatePicker, Popconfirm, message } from 'antd'
+import React, { useState, useEffect } from 'react'
 import { CalendarOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import { Text } from '../text'
 import UpcomingEventsSkeleton from '../skeleton/upcoming-events'
-import { useList, useCreate, useDelete } from '@refinedev/core'
-import { DASHBORAD_CALENDAR_UPCOMING_EVENTS_QUERY } from '@/graphql/queries'
+import { useList, useCreate, useDelete, useGetIdentity } from '@refinedev/core'
+import { GET_EVENTS_QUERY } from '@/graphql/queries'
+import { CREATE_EVENT_MUTATION, DELETE_EVENT_MUTATION } from '@/graphql/mutations'
 import dayjs from 'dayjs'
 import { BaseKey } from '@refinedev/core'
 
@@ -14,51 +15,79 @@ const getRandomColor = () => {
   return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
 };
 
-// Updated getDate function to only show hours and minutes
 const getDate = (startDate: string, endDate: string) => {
   const start = dayjs(startDate).format("MMM DD, YYYY - HH:mm");
   const end = dayjs(endDate).format("MMM DD, YYYY - HH:mm");
   return `${start} - ${end}`;
 };
 
-export const UpcomingEvents = () => {
+export const UpcomingEvents: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
+  const { data: user } = useGetIdentity<{ id: string }>();
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (user?.id) {
+      setUserId(user.id);
+    }
+  }, [user]);
+
   const { data, isLoading, refetch } = useList({
     resource: 'events',
-    pagination: { pageSize: 100 },
-    sorters: [
-      {
-        field: 'startDate',
-        order: 'asc'
-      }
-    ],
     meta: {
-      gqlQuery: DASHBORAD_CALENDAR_UPCOMING_EVENTS_QUERY
+      gqlQuery: GET_EVENTS_QUERY,
+      variables: {
+        userId: userId || '',
+      }
+    },
+  
+    queryOptions: {
+      enabled: !!userId,
     }
   });
+
 
   const { mutate: createEvent } = useCreate();
   const { mutate: deleteEvent } = useDelete();
 
   const handleAddEvent = (values: any) => {
+    if (!userId) {
+      message.error('User ID is not available. Please try again.');
+      return;
+    }
+  
+    const newEvent = {
+      title: values.title,
+      startDate: values.dateRange[0].toISOString(),
+      endDate: values.dateRange[1].toISOString(),
+      color: getRandomColor(),
+      userId: userId,
+      description: values.title,
+      categoryId: "1",
+      participantIds: [],
+    };
+  
+    console.log('New event data:', newEvent);
+  
     createEvent({
       resource: 'events',
-      values: {
-        title: values.title,
-        startDate: values.dateRange[0].toISOString(),
-        endDate: values.dateRange[1].toISOString(),
-        description: values.title,
-        categoryId: "1",
-        participantIds: [],
-        color: getRandomColor(),
-      },
+      values: newEvent,  // Use 'values' instead of 'variables'
+      meta: {
+        gqlMutation: CREATE_EVENT_MUTATION
+      }
     }, {
-      onSuccess: () => {
+      onSuccess: (response) => {
+        console.log('Create event response:', response);
         refetch();
         setIsModalVisible(false);
         form.resetFields();
+        message.success('Event created successfully');
+      },
+      onError: (error) => {
+        console.error('Error creating event:', error);
+        message.error('Failed to create event');
       }
     });
   };
@@ -68,13 +97,27 @@ export const UpcomingEvents = () => {
       deleteEvent({
         resource: 'events',
         id,
+        meta: {
+          gqlMutation: DELETE_EVENT_MUTATION
+        }
       }, {
-        onSuccess: () => refetch()
+        onSuccess: () => {
+          refetch();
+          message.success('Event deleted successfully');
+        },
+        onError: (error) => {
+          console.error('Error deleting event:', error);
+          message.error('Failed to delete event');
+        }
       });
     } else {
       console.error("Cannot delete event: ID is undefined");
     }
   };
+
+  if (!userId) {
+    return <div>Loading user information...</div>;
+  }
 
   return (
     <Card
@@ -156,7 +199,7 @@ export const UpcomingEvents = () => {
 
       <Modal
         title="Add New Event"
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >

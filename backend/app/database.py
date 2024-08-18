@@ -2,12 +2,19 @@ import certifi
 from motor.motor_asyncio import AsyncIOMotorClient
 from .config import settings
 
-client = AsyncIOMotorClient(settings.DATABASE_URL, tlsCAFile=certifi.where())
+client = AsyncIOMotorClient(settings.DATABASE_URL, tlsCAFile=certifi.where(), tlsAllowInvalidCertificates=True)
 database = client[settings.DATABASE_NAME]
-collection = database[settings.COLLECTION_NAME]
+users_collection = database[settings.COLLECTION_NAME]
+events_collection = database["events"]
+
+async def get_users_collection():
+    return users_collection
+
+async def get_events_collection():
+    return events_collection
 
 async def get_database():
     return database
 
 async def get_collection():
-    return collection
+    return users_collection

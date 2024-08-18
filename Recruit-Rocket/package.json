@@ -6,7 +6,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
     "@ant-design/plots": "^1.2.5",
-    "@apollo/client": "^3.11.2",
+    "@apollo/client": "^3.11.4",
     "@pankod/refine-antd": "^4.9.0",
     "@pankod/refine-core": "^3.103.0",
     "@refinedev/antd": "^5.37.4",

@@ -326,3 +326,66 @@ export type GetApplicantsQuery = {
     }>;
   };
 };
+
+export type Event = {
+  id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  description?: string;
+  categoryId?: string;
+  participantIds: string[];
+  color: string;
+  userId: string;
+};
+
+export type CreateOneEventInput = {
+  title: string;
+  startDate: string;
+  endDate: string;
+  description?: string;
+  categoryId?: string;
+  participantIds?: string[];
+  color: string;
+  userId: string;
+};
+
+export type EventFilter = {
+  title?: StringFieldComparison;
+  startDate?: DateFieldComparison;
+  endDate?: DateFieldComparison;
+  userId?: StringFieldComparison;
+};
+
+export type EventSort = {
+  field: "title" | "startDate" | "endDate";
+  direction: SortDirection;
+};
+
+// You may need to add or update these types if not already present
+export type StringFieldComparison = {
+  eq?: string;
+  neq?: string;
+  in?: string[];
+  notIn?: string[];
+  like?: string;
+  notLike?: string;
+};
+
+export type DateFieldComparison = {
+  eq?: string;
+  neq?: string;
+  gt?: string;
+  gte?: string;
+  lt?: string;
+  lte?: string;
+  in?: string[];
+  notIn?: string[];
+};
+
+export type SortDirection = "ASC" | "DESC";
+
+export type OffsetPaging = {
+  offset?: number;
+  limit?: number;
+};

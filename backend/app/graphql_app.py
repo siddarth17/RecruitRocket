@@ -3,6 +3,9 @@ from strawberry.fastapi import GraphQLRouter
 from typing import List, Optional, ForwardRef
 from datetime import datetime
 from enum import Enum
+from app.database import get_users_collection, get_events_collection
+from bson import ObjectId
+from pydantic import BaseModel
 
 # Enums
 @strawberry.enum
@@ -148,9 +151,14 @@ class ApplicantConnection:
 class Event:
     id: str
     title: str
-    color: str
     startDate: datetime
     endDate: datetime
+    description: Optional[str] = None
+    categoryId: Optional[str] = None
+    participantIds: List[str] = strawberry.field(default_factory=list)
+    color: str
+    userId: str
+
 
 @strawberry.type
 class EventConnection:
@@ -228,6 +236,17 @@ class UpdateOneCompanyInput:
     country: Optional[str]
     website: Optional[str]
     salesOwnerId: Optional[str]
+
+@strawberry.input
+class CreateOneEventInput:
+    title: str
+    startDate: datetime
+    endDate: datetime
+    color: str
+    userId: str
+    description: Optional[str] = None
+    categoryId: Optional[str] = None
+    participantIds: List[str] = strawberry.field(default_factory=list)
 
 @strawberry.input
 class UpdateOneTaskInput:
@@ -343,6 +362,12 @@ class Query:
             contacts=ContactConnection(nodes=[], totalCount=0),
             deals=DealConnection(nodes=[], totalCount=0)
         )
+    
+    @strawberry.field
+    async def get_user_events(self, userId: str) -> List[Event]:
+        events_collection = await get_events_collection()
+        events = await events_collection.find({"userId": userId}).to_list(None)
+        return [Event(**{**event, "id": str(event["_id"])}) for event in events]
 
     @strawberry.field
     def companies(self, filter: Optional[CompanyFilter] = None, paging: Optional[OffsetPaging] = None, sorting: Optional[List[CompanySort]] = None) -> CompanyConnection:
@@ -405,6 +430,23 @@ class Mutation:
     def create_applicant(self, input: CreateOneApplicantInput) -> Applicant:
         # Implement logic to create applicant
         pass
+    
+    @strawberry.mutation
+    async def create_one_event(self, input: CreateOneEventInput) -> Event:
+        events_collection = await get_events_collection()
+        event_dict = input.__dict__
+        event_dict["id"] = str(ObjectId())
+        result = await events_collection.insert_one(event_dict)
+        return Event(**event_dict)
+
+    @strawberry.mutation
+    async def delete_one_event(self, id: str) -> Event:
+        events_collection = await get_events_collection()
+        event = await events_collection.find_one_and_delete({"_id": ObjectId(id)})
+        if event:
+            return Event(**{**event, "id": str(event["_id"])})
+        else:
+            raise Exception("Event not found")
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 

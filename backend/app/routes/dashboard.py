@@ -3,6 +3,7 @@ from app.auth.utils import get_current_user
 from app.models.user import UserInDB, UserOut
 from app.database import get_collection
 from bson import ObjectId
+from app.database import get_users_collection
 import logging
 
 router = APIRouter()

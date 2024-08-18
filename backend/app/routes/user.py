@@ -2,6 +2,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 from app.auth.utils import get_current_user
 from app.models.user import UserInDB, UserOut
+from app.database import get_users_collection
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
