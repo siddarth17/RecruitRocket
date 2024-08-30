@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import auth, user, dashboard, events
+from app.routes import auth, user, dashboard, events, applicants, values
 from app.database import client
 from app.graphql_app import graphql_app  
 from dotenv import load_dotenv
@@ -23,6 +23,8 @@ app.include_router(auth.router, prefix="/auth")
 app.include_router(user.router, prefix="/user")
 app.include_router(dashboard.router, prefix="/user", tags=["dashboard"])
 app.include_router(events.router, prefix="/events", tags=["events"])
+app.include_router(applicants.router, prefix="/applicants", tags=["applicants"])
+app.include_router(values.router, prefix="/company-values", tags=["company-values"])
 
 graphql_app = GraphQLRouter(schema)
 app.include_router(graphql_app, prefix="/graphql")

@@ -238,7 +238,7 @@ import { Text } from '../text';
 import UpcomingEventsSkeleton from '../skeleton/upcoming-events';
 import dayjs, { Dayjs } from 'dayjs';
 import api from '@/api';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const { RangePicker } = DatePicker;
 
@@ -278,8 +278,8 @@ export const UpcomingEvents: React.FC = () => {
       const response = await api.get<Event[]>('/events');
       setEvents(response.data);
     } catch (error) {
-      if (api.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ detail?: string }>;
         console.error('Error fetching events:', axiosError.response?.data || axiosError.message);
         message.error(`Failed to fetch events: ${axiosError.response?.data?.detail || axiosError.message}`);
       } else {
@@ -304,15 +304,15 @@ export const UpcomingEvents: React.FC = () => {
     };
 
     try {
-      const response = await api.post<Event>('events/', newEvent);  // Note the trailing slash
+      const response = await api.post<Event>('events/', newEvent);
       console.log('Event creation response:', response.data);
       fetchEvents();
       setIsModalVisible(false);
       form.resetFields();
       message.success('Event created successfully');
     } catch (error) {
-      if (api.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ detail?: string }>;
         console.error('Error creating event:', axiosError.response?.data || axiosError.message);
         message.error(`Failed to create event: ${axiosError.response?.data?.detail || axiosError.message}`);
       } else {
@@ -322,15 +322,14 @@ export const UpcomingEvents: React.FC = () => {
     }
   };
 
-
   const handleDeleteEvent = async (id: string): Promise<void> => {
     try {
       await api.delete(`/events/${id}`);
       fetchEvents();
       message.success('Event deleted successfully');
     } catch (error) {
-      if (api.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ detail?: string }>;
         console.error('Error deleting event:', axiosError.response?.data || axiosError.message);
         message.error(`Failed to delete event: ${axiosError.response?.data?.detail || axiosError.message}`);
       } else {

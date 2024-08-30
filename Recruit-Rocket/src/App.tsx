@@ -79,13 +79,13 @@ function App() {
                   <Route index element={<Home />} />
                   <Route path="/companies">
                     <Route index element={<CompanyList />} />
-                    <Route path="create" element={
+                     <Route path="create" element={
                       <Create
                         visible={isCreateModalVisible}
                         onCancel={() => setIsCreateModalVisible(false)}
                         onCreateSuccess={handleCreateSuccess}
                       />
-                    } />
+                    } /> 
                     <Route path="edit/:id" element={<ApplicantEditPage />} />
                     <Route path="show/:id" element={<ApplicantEditPage />} />
                   </Route>

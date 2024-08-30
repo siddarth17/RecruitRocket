@@ -1,8 +1,7 @@
-// src/pages/values/index.tsx
-
 import React, { useState, useEffect } from 'react';
-import { List, Button, Card, Space, Modal, Input } from 'antd';
+import { List, Button, Card, Space, Modal, Input, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import api from '@/api';
 
 const { TextArea } = Input;
 
@@ -13,13 +12,18 @@ export const Values: React.FC = () => {
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    const storedValues = JSON.parse(localStorage.getItem('companyValues') || '[]');
-    setValues(storedValues);
+    fetchValues();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('companyValues', JSON.stringify(values));
-  }, [values]);
+  const fetchValues = async () => {
+    try {
+      const response = await api.get('/company-values');
+      setValues(response.data.values);
+    } catch (error) {
+      console.error('Failed to fetch company values:', error);
+      message.error('Failed to load company values');
+    }
+  };
 
   const showModal = (index?: number) => {
     if (index !== undefined) {
@@ -32,14 +36,19 @@ export const Values: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
     if (currentValue.trim()) {
-      if (editIndex !== null) {
-        const updatedValues = [...values];
-        updatedValues[editIndex] = currentValue.trim();
-        setValues(updatedValues);
-      } else {
-        setValues([...values, currentValue.trim()]);
+      try {
+        if (editIndex !== null) {
+          await api.put(`/company-values/${editIndex}`, { value: currentValue.trim() });
+        } else {
+          await api.post('/company-values', { value: currentValue.trim() });
+        }
+        fetchValues();
+        message.success(editIndex !== null ? 'Value updated successfully' : 'Value added successfully');
+      } catch (error) {
+        console.error('Failed to save company value:', error);
+        message.error('Failed to save company value');
       }
     }
     setIsModalVisible(false);
@@ -53,9 +62,15 @@ export const Values: React.FC = () => {
     setEditIndex(null);
   };
 
-  const handleRemoveValue = (index: number) => {
-    const updatedValues = values.filter((_, i) => i !== index);
-    setValues(updatedValues);
+  const handleRemoveValue = async (index: number) => {
+    try {
+      await api.delete(`/company-values/${index}`);
+      fetchValues();
+      message.success('Value deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete company value:', error);
+      message.error('Failed to delete company value');
+    }
   };
 
   return (
