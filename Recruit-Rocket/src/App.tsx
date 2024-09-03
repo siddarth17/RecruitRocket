@@ -6,7 +6,7 @@ import { useNotificationProvider } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
 
 import { authProvider, dataProvider, liveProvider } from "./providers";
-import { Home, ForgotPassword, Login, Register, CompanyList, ApplicantEditPage, Values } from "./pages";
+import { Home, ForgotPassword, Login, Register, ApplicantList, ApplicantEditPage, Values } from "./pages";
 import routerBindings, {
   CatchAllNavigate,
   DocumentTitleHandler,
@@ -41,11 +41,11 @@ function App() {
               authProvider={authProvider}
               resources={[
                 {
-                  name: "companies",
-                  list: "/companies",
-                  create: "/companies/create",
-                  edit: "/companies/edit/:id",
-                  show: "/companies/show/:id",
+                  name: "applicants",
+                  list: "/applicants",
+                  create: "/applicants/create",
+                  edit: "/applicants/edit/:id",
+                  show: "/applicants/show/:id",
                 },
                 {
                   name: "values",
@@ -77,15 +77,15 @@ function App() {
                   }
                 >
                   <Route index element={<Home />} />
-                  <Route path="/companies">
-                    <Route index element={<CompanyList />} />
-                     <Route path="create" element={
+                  <Route path="/applicants">
+                    <Route index element={<ApplicantList />} />
+                    <Route path="create" element={
                       <Create
                         visible={isCreateModalVisible}
                         onCancel={() => setIsCreateModalVisible(false)}
                         onCreateSuccess={handleCreateSuccess}
                       />
-                    } /> 
+                    } />
                     <Route path="edit/:id" element={<ApplicantEditPage />} />
                     <Route path="show/:id" element={<ApplicantEditPage />} />
                   </Route>

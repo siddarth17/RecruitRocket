@@ -37,155 +37,6 @@ async def create_applicant(applicant_input: ApplicantCreateModel, current_user: 
         logger.error(f"Error creating applicant: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"An error occurred while creating the applicant: {str(e)}")
 
-# @router.post("/bulk", response_model=List[ApplicantModel])
-# async def bulk_create_applicants(file: UploadFile = File(...), current_user: UserInDB = Depends(get_current_user)):
-#     logger.info(f"Attempting bulk create applicants for user: {current_user.id}")
-#     try:
-#         content = await file.read()
-#         csv_data = content.decode('utf-8')
-        
-#         # Process the CSV data
-#         processed_data = process_csv(csv_data)
-        
-#         # Prepare the prompt for OpenAI API
-#         prompt = f"""
-#         Convert the following CSV data into a format suitable for creating applicants:
-#         {processed_data}
-        
-#         The desired format for each applicant is:
-#         {{
-#             "name": "string",
-#             "status": "string (rejected, considering, or accepted)",
-#             "strength": "integer (0-100)",
-#             "imageUrl": "string (URL)",
-#             "year": "integer (1-5)",
-#             "major": "string",
-#             "gender": "string",
-#             "summary": "string"
-#         }}
-        
-#         Please follow these guidelines:
-#         1. Map the CSV columns to the desired fields as accurately as possible.
-#         2. If a required field is missing, use a default value:
-#            - name: "Unknown"
-#            - status: "considering"
-#            - strength: 50
-#            - imageUrl: ""
-#            - year: 1
-#            - major: "Undeclared"
-#            - gender: "Not specified"
-#            - summary: ""
-#         3. If a field in the CSV doesn't match any of the desired fields, ignore it.
-#         4. Ensure 'strength' is an integer between 0 and 100.
-#         5. Ensure 'year' is an integer between 1 and 5.
-#         6. Ensure 'status' is one of: "rejected", "considering", or "accepted".
-#         7. Convert any relevant text to appropriate data types (e.g., string to integer for 'strength' and 'year').
-        
-#         Return the result as a valid Python list of dictionaries.
-#         """
-        
-#         # Call OpenAI API
-#         client = OpenAI()
-#         response = client.chat.completions.create(
-#             model="gpt-4o-mini",
-#             messages=[
-#                 {"role": "system", "content": "You are a helpful assistant that converts CSV data to JSON."},
-#                 {"role": "user", "content": prompt}
-#             ]
-#         )
-        
-#         # Parse the OpenAI response
-#         parsed_applicants = eval(response.choices[0].message['content'])
-        
-#         # Create applicants in bulk
-#         collection = await get_applicants_collection()
-#         created_applicants = []
-#         for applicant_data in parsed_applicants:
-#             applicant_data["userId"] = str(current_user.id)
-#             applicant_data["id"] = str(ObjectId())
-#             result = await collection.insert_one(applicant_data)
-#             created_applicant = await collection.find_one({"_id": result.inserted_id})
-#             created_applicants.append(ApplicantModel(**{**created_applicant, "id": str(created_applicant["_id"])}))
-        
-#         return created_applicants
-#     except Exception as e:
-#         logger.error(f"Error in bulk create applicants: {str(e)}", exc_info=True)
-#         raise HTTPException(status_code=500, detail=f"An error occurred during bulk applicant creation: {str(e)}")
-
-# @router.post("/bulk", response_model=List[ApplicantModel])
-# async def bulk_create_applicants(file: UploadFile = File(...), current_user: UserInDB = Depends(get_current_user)):
-#     logger.info(f"Attempting bulk create applicants for user: {current_user.id}")
-#     try:
-#         content = await file.read()
-#         csv_data = content.decode('utf-8')
-        
-#         # Process the CSV data
-#         processed_data = process_csv(csv_data)
-        
-#         # Prepare the prompt for OpenAI API
-#         prompt = f"""
-#         Convert the following CSV data into a format suitable for creating applicants:
-#         {processed_data}
-        
-#         The desired format for each applicant is:
-#         {{
-#             "name": "string",
-#             "status": "string (rejected, considering, or accepted)",
-#             "strength": "integer (0-100)",
-#             "imageUrl": "string (URL)",
-#             "year": "integer (1-5)",
-#             "major": "string",
-#             "gender": "string",
-#             "summary": "string"
-#         }}
-        
-#         Please follow these guidelines:
-#         1. Map the CSV columns to the desired fields as accurately as possible.
-#         2. If a required field is missing, use a default value:
-#            - name: "Unknown"
-#            - status: "considering"
-#            - strength: 50
-#            - imageUrl: ""
-#            - year: 1
-#            - major: "Undeclared"
-#            - gender: "Not specified"
-#            - summary: ""
-#         3. If a field in the CSV doesn't match any of the desired fields, ignore it.
-#         4. Ensure 'strength' is an integer between 0 and 100.
-#         5. Ensure 'year' is an integer between 1 and 5.
-#         6. Ensure 'status' is one of: "rejected", "considering", or "accepted".
-#         7. Convert any relevant text to appropriate data types (e.g., string to integer for 'strength' and 'year').
-        
-#         Return the result as a valid Python list of dictionaries.
-#         """
-        
-#         # Call OpenAI API
-#         response = client.chat.completions.create(
-#             model="gpt-4o-mini",  # Note: Changed from "gpt-4o-mini" to "gpt-4" as the former is not a standard model name
-#             messages=[
-#                 {"role": "system", "content": "You are a helpful assistant that converts CSV data to JSON."},
-#                 {"role": "user", "content": prompt}
-#             ]
-#         )
-        
-#         # Parse the OpenAI response
-#         parsed_applicants = eval(response.choices[0].message.content)
-        
-#         # Create applicants in bulk
-#         collection = await get_applicants_collection()
-#         created_applicants = []
-#         for applicant_data in parsed_applicants:
-#             applicant_data["userId"] = str(current_user.id)
-#             applicant_data["id"] = str(ObjectId())
-#             result = await collection.insert_one(applicant_data)
-#             created_applicant = await collection.find_one({"_id": result.inserted_id})
-#             created_applicants.append(ApplicantModel(**{**created_applicant, "id": str(created_applicant["_id"])}))
-        
-#         return created_applicants
-#     except Exception as e:
-#         logger.error(f"Error in bulk create applicants: {str(e)}", exc_info=True)
-#         raise HTTPException(status_code=500, detail=f"An error occurred during bulk applicant creation: {str(e)}")
-
 @router.post("/bulk", response_model=List[ApplicantModel])
 async def bulk_create_applicants(file: UploadFile = File(...), current_user: UserInDB = Depends(get_current_user)):
     logger.info(f"Attempting bulk create applicants for user: {current_user.id}")
@@ -375,3 +226,152 @@ async def delete_stage(applicant_id: str, stage_index: int, current_user: UserIn
     except Exception as e:
         logger.error(f"Error deleting stage: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"An error occurred while deleting the stage: {str(e)}")
+
+# @router.post("/bulk", response_model=List[ApplicantModel])
+# async def bulk_create_applicants(file: UploadFile = File(...), current_user: UserInDB = Depends(get_current_user)):
+#     logger.info(f"Attempting bulk create applicants for user: {current_user.id}")
+#     try:
+#         content = await file.read()
+#         csv_data = content.decode('utf-8')
+        
+#         # Process the CSV data
+#         processed_data = process_csv(csv_data)
+        
+#         # Prepare the prompt for OpenAI API
+#         prompt = f"""
+#         Convert the following CSV data into a format suitable for creating applicants:
+#         {processed_data}
+        
+#         The desired format for each applicant is:
+#         {{
+#             "name": "string",
+#             "status": "string (rejected, considering, or accepted)",
+#             "strength": "integer (0-100)",
+#             "imageUrl": "string (URL)",
+#             "year": "integer (1-5)",
+#             "major": "string",
+#             "gender": "string",
+#             "summary": "string"
+#         }}
+        
+#         Please follow these guidelines:
+#         1. Map the CSV columns to the desired fields as accurately as possible.
+#         2. If a required field is missing, use a default value:
+#            - name: "Unknown"
+#            - status: "considering"
+#            - strength: 50
+#            - imageUrl: ""
+#            - year: 1
+#            - major: "Undeclared"
+#            - gender: "Not specified"
+#            - summary: ""
+#         3. If a field in the CSV doesn't match any of the desired fields, ignore it.
+#         4. Ensure 'strength' is an integer between 0 and 100.
+#         5. Ensure 'year' is an integer between 1 and 5.
+#         6. Ensure 'status' is one of: "rejected", "considering", or "accepted".
+#         7. Convert any relevant text to appropriate data types (e.g., string to integer for 'strength' and 'year').
+        
+#         Return the result as a valid Python list of dictionaries.
+#         """
+        
+#         # Call OpenAI API
+#         client = OpenAI()
+#         response = client.chat.completions.create(
+#             model="gpt-4o-mini",
+#             messages=[
+#                 {"role": "system", "content": "You are a helpful assistant that converts CSV data to JSON."},
+#                 {"role": "user", "content": prompt}
+#             ]
+#         )
+        
+#         # Parse the OpenAI response
+#         parsed_applicants = eval(response.choices[0].message['content'])
+        
+#         # Create applicants in bulk
+#         collection = await get_applicants_collection()
+#         created_applicants = []
+#         for applicant_data in parsed_applicants:
+#             applicant_data["userId"] = str(current_user.id)
+#             applicant_data["id"] = str(ObjectId())
+#             result = await collection.insert_one(applicant_data)
+#             created_applicant = await collection.find_one({"_id": result.inserted_id})
+#             created_applicants.append(ApplicantModel(**{**created_applicant, "id": str(created_applicant["_id"])}))
+        
+#         return created_applicants
+#     except Exception as e:
+#         logger.error(f"Error in bulk create applicants: {str(e)}", exc_info=True)
+#         raise HTTPException(status_code=500, detail=f"An error occurred during bulk applicant creation: {str(e)}")
+
+# @router.post("/bulk", response_model=List[ApplicantModel])
+# async def bulk_create_applicants(file: UploadFile = File(...), current_user: UserInDB = Depends(get_current_user)):
+#     logger.info(f"Attempting bulk create applicants for user: {current_user.id}")
+#     try:
+#         content = await file.read()
+#         csv_data = content.decode('utf-8')
+        
+#         # Process the CSV data
+#         processed_data = process_csv(csv_data)
+        
+#         # Prepare the prompt for OpenAI API
+#         prompt = f"""
+#         Convert the following CSV data into a format suitable for creating applicants:
+#         {processed_data}
+        
+#         The desired format for each applicant is:
+#         {{
+#             "name": "string",
+#             "status": "string (rejected, considering, or accepted)",
+#             "strength": "integer (0-100)",
+#             "imageUrl": "string (URL)",
+#             "year": "integer (1-5)",
+#             "major": "string",
+#             "gender": "string",
+#             "summary": "string"
+#         }}
+        
+#         Please follow these guidelines:
+#         1. Map the CSV columns to the desired fields as accurately as possible.
+#         2. If a required field is missing, use a default value:
+#            - name: "Unknown"
+#            - status: "considering"
+#            - strength: 50
+#            - imageUrl: ""
+#            - year: 1
+#            - major: "Undeclared"
+#            - gender: "Not specified"
+#            - summary: ""
+#         3. If a field in the CSV doesn't match any of the desired fields, ignore it.
+#         4. Ensure 'strength' is an integer between 0 and 100.
+#         5. Ensure 'year' is an integer between 1 and 5.
+#         6. Ensure 'status' is one of: "rejected", "considering", or "accepted".
+#         7. Convert any relevant text to appropriate data types (e.g., string to integer for 'strength' and 'year').
+        
+#         Return the result as a valid Python list of dictionaries.
+#         """
+        
+#         # Call OpenAI API
+#         response = client.chat.completions.create(
+#             model="gpt-4o-mini",  # Note: Changed from "gpt-4o-mini" to "gpt-4" as the former is not a standard model name
+#             messages=[
+#                 {"role": "system", "content": "You are a helpful assistant that converts CSV data to JSON."},
+#                 {"role": "user", "content": prompt}
+#             ]
+#         )
+        
+#         # Parse the OpenAI response
+#         parsed_applicants = eval(response.choices[0].message.content)
+        
+#         # Create applicants in bulk
+#         collection = await get_applicants_collection()
+#         created_applicants = []
+#         for applicant_data in parsed_applicants:
+#             applicant_data["userId"] = str(current_user.id)
+#             applicant_data["id"] = str(ObjectId())
+#             result = await collection.insert_one(applicant_data)
+#             created_applicant = await collection.find_one({"_id": result.inserted_id})
+#             created_applicants.append(ApplicantModel(**{**created_applicant, "id": str(created_applicant["_id"])}))
+        
+#         return created_applicants
+#     except Exception as e:
+#         logger.error(f"Error in bulk create applicants: {str(e)}", exc_info=True)
+#         raise HTTPException(status_code=500, detail=f"An error occurred during bulk applicant creation: {str(e)}")

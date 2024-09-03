@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { List, CreateButton, EditButton, DeleteButton } from '@refinedev/antd';
 import { useNavigation, useGetIdentity } from '@refinedev/core';
-import { Table, Space, message, Button } from 'antd';
+import { Table, Space, message, Button, Popconfirm } from 'antd';
 import { Text } from '@/components/text';
 import { Applicant } from '@/graphql/types';
 import CreateApplicant from './create';
 import BulkCreateApplicants from './bulk-create';
+import { DeleteOutlined } from '@ant-design/icons';
 import api from '@/api';
 
-export const CompanyList: React.FC<React.PropsWithChildren> = ({ children }) => {
+export const ApplicantList: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isBulkModalVisible, setIsBulkModalVisible] = useState(false);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
@@ -115,14 +116,20 @@ export const CompanyList: React.FC<React.PropsWithChildren> = ({ children }) => 
                 <EditButton 
                   hideText 
                   size="small" 
-                  onClick={() => push(`/companies/edit/${value}`)}
+                  onClick={() => push(`/applicants/edit/${value}`)}
                 />
-                <DeleteButton 
-                  hideText 
-                  size="small" 
-                  recordItemId={value} 
-                  onSuccess={() => handleDeleteApplicant(value)}
-                />
+                <Popconfirm
+                  title="Are you sure you want to delete this applicant?"
+                  onConfirm={() => handleDeleteApplicant(value)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button 
+                    icon={<DeleteOutlined />} 
+                    size="small" 
+                    danger
+                  />
+                </Popconfirm>
               </Space>
             )}
           />
@@ -146,4 +153,4 @@ export const CompanyList: React.FC<React.PropsWithChildren> = ({ children }) => 
   );
 };
 
-export default CompanyList;
+export default ApplicantList;
