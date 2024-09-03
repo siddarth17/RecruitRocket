@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { List, CreateButton, EditButton, DeleteButton } from '@refinedev/antd';
 import { useNavigation, useGetIdentity } from '@refinedev/core';
-import { Table, Space, message } from 'antd';
+import { Table, Space, message, Button } from 'antd';
 import { Text } from '@/components/text';
 import { Applicant } from '@/graphql/types';
 import CreateApplicant from './create';
+import BulkCreateApplicants from './bulk-create';
 import api from '@/api';
 
 export const CompanyList: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isBulkModalVisible, setIsBulkModalVisible] = useState(false);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [loading, setLoading] = useState(true);
   const { data: user } = useGetIdentity<{id: string, name: string, email: string}>();
@@ -63,15 +65,23 @@ export const CompanyList: React.FC<React.PropsWithChildren> = ({ children }) => 
     });
     return Array.from(evaluatorsSet);
   };
-
+  
   return (
     <div>
       <List 
         breadcrumb={false}
         headerButtons={
-          <CreateButton 
-            onClick={() => setIsModalVisible(true)}
-          />
+          <>
+            <CreateButton 
+              onClick={() => setIsModalVisible(true)}
+            />
+            <Button 
+              onClick={() => setIsBulkModalVisible(true)}
+              style={{ marginLeft: '10px' }}
+            >
+              Bulk Create
+            </Button>
+          </>
         }
       >
         <Table
@@ -122,6 +132,14 @@ export const CompanyList: React.FC<React.PropsWithChildren> = ({ children }) => 
         visible={isModalVisible} 
         onCancel={() => setIsModalVisible(false)}
         onCreateSuccess={handleCreateApplicant}
+      />
+      <BulkCreateApplicants
+        visible={isBulkModalVisible}
+        onCancel={() => setIsBulkModalVisible(false)}
+        onBulkCreateSuccess={() => {
+          setIsBulkModalVisible(false);
+          fetchApplicants();
+        }}
       />
       {children}
     </div>
