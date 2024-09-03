@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Edit, useForm } from '@refinedev/antd';
-import { Row, Col, Card, Button, Modal, Form, Input, InputNumber, Select, Table, message } from 'antd';
-import { EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Button, Modal, Form, Input, InputNumber, Select, Table, message, Space } from 'antd';
+import { EditOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Applicant, Stage } from '@/graphql/types';
-import applicantsData from "../../mocks/mock-applicants";
 import api from '@/api';
 
 const { TextArea } = Input;
@@ -15,47 +14,85 @@ const ApplicantEditPage: React.FC = () => {
   const [isGeneralInfoModalVisible, setIsGeneralInfoModalVisible] = useState(false);
   const [isSummaryModalVisible, setIsSummaryModalVisible] = useState(false);
   const [isStageModalVisible, setIsStageModalVisible] = useState(false);
+  const [editingStageIndex, setEditingStageIndex] = useState<number | null>(null);
 
   const { formProps, saveButtonProps } = useForm<Applicant>({
     redirect: false,
   });
 
   useEffect(() => {
-    const fetchApplicant = async () => {
-      try {
-        const response = await api.get(`/applicants/${id}`);
-        setApplicant(response.data);
-      } catch (error) {
-        console.error('Failed to fetch applicant:', error);
-        message.error('Failed to load applicant');
-      }
-    };
-
-    if (id) {
-      fetchApplicant();
-    }
+    fetchApplicant();
   }, [id]);
 
-  if (!applicant) {
-    return <div>Loading...</div>;
-  }
-
-  const handleGeneralInfoSave = (values: Partial<Applicant>) => {
-    setApplicant(prev => prev ? { ...prev, ...values } : undefined);
-    setIsGeneralInfoModalVisible(false);
+  const fetchApplicant = async () => {
+    try {
+      const response = await api.get(`/applicants/${id}`);
+      setApplicant(response.data);
+    } catch (error) {
+      console.error('Failed to fetch applicant:', error);
+      message.error('Failed to load applicant');
+    }
   };
 
-  const handleSummarySave = (values: { summary: string }) => {
-    setApplicant(prev => prev ? { ...prev, summary: values.summary } : undefined);
-    setIsSummaryModalVisible(false);
+  const handleGeneralInfoSave = async (values: Partial<Applicant>) => {
+    try {
+      const response = await api.put(`/applicants/${id}`, values);
+      setApplicant(response.data);
+      setIsGeneralInfoModalVisible(false);
+      message.success('General information updated successfully');
+    } catch (error) {
+      console.error('Failed to update general information:', error);
+      message.error('Failed to update general information');
+    }
   };
 
-  const handleStageAdd = (values: Stage) => {
-    setApplicant(prev => prev ? { 
-      ...prev, 
-      stages: [...prev.stages, values] 
-    } : undefined);
-    setIsStageModalVisible(false);
+  const handleSummarySave = async (values: { summary: string }) => {
+    try {
+      const response = await api.put(`/applicants/${id}`, values);
+      setApplicant(response.data);
+      setIsSummaryModalVisible(false);
+      message.success('Summary updated successfully');
+    } catch (error) {
+      console.error('Failed to update summary:', error);
+      message.error('Failed to update summary');
+    }
+  };
+
+  const handleStageAdd = async (values: Stage) => {
+    try {
+      const response = await api.post(`/applicants/${id}/stages`, values);
+      setApplicant(response.data);
+      setIsStageModalVisible(false);
+      message.success('Stage added successfully');
+    } catch (error) {
+      console.error('Failed to add stage:', error);
+      message.error('Failed to add stage');
+    }
+  };
+
+  const handleStageUpdate = async (values: Stage) => {
+    if (editingStageIndex === null) return;
+    try {
+      const response = await api.put(`/applicants/${id}/stages/${editingStageIndex}`, values);
+      setApplicant(response.data);
+      setIsStageModalVisible(false);
+      setEditingStageIndex(null);
+      message.success('Stage updated successfully');
+    } catch (error) {
+      console.error('Failed to update stage:', error);
+      message.error('Failed to update stage');
+    }
+  };
+
+  const handleStageDelete = async (stageIndex: number) => {
+    try {
+      const response = await api.delete(`/applicants/${id}/stages/${stageIndex}`);
+      setApplicant(response.data);
+      message.success('Stage deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete stage:', error);
+      message.error('Failed to delete stage');
+    }
   };
 
   const columns = [
@@ -75,16 +112,33 @@ const ApplicantEditPage: React.FC = () => {
       dataIndex: 'performance',
       key: 'performance',
     },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (text: string, record: Stage, index: number) => (
+        <Space>
+          <Button 
+            icon={<EditOutlined />} 
+            onClick={() => {
+              setEditingStageIndex(index);
+              setIsStageModalVisible(true);
+            }}
+          />
+          <Button 
+            icon={<DeleteOutlined />} 
+            onClick={() => handleStageDelete(index)}
+          />
+        </Space>
+      ),
+    },
   ];
 
+  if (!applicant) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Edit 
-        saveButtonProps={saveButtonProps}
-        headerButtons={({ defaultButtons }) => (
-          <>
-          </>
-        )}
-      >
+    <Edit saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Row gutter={[32, 32]}>
           <Col xs={24} xl={12}>
@@ -174,28 +228,33 @@ const ApplicantEditPage: React.FC = () => {
       </Modal>
 
       <Modal
-        title="Add Stage"
+        title={editingStageIndex !== null ? "Edit Stage" : "Add Stage"}
         visible={isStageModalVisible}
-        onCancel={() => setIsStageModalVisible(false)}
+        onCancel={() => {
+          setIsStageModalVisible(false);
+          setEditingStageIndex(null);
+        }}
         footer={null}
       >
-        <Form onFinish={handleStageAdd}>
+        <Form 
+          onFinish={editingStageIndex !== null ? handleStageUpdate : handleStageAdd}
+          initialValues={editingStageIndex !== null ? applicant.stages[editingStageIndex] : undefined}
+        >
           <Form.Item name="stage_name" label="Stage Name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item name="stage_evaluators" label="Stage Evaluators" rules={[{ required: true }]}>
-            <Select mode="tags" style={{ width: '100%' }} placeholder="Enter stage evaluators">
-            </Select>
+            <Select mode="tags" style={{ width: '100%' }} placeholder="Enter stage evaluators" />
+          </Form.Item>
+          <Form.Item name="performance" label="Performance">
+            <InputNumber min={0} max={100} />
           </Form.Item>
           <Form.Item name="notes" label="Notes">
             <TextArea rows={3} />
           </Form.Item>
-          <Form.Item name="performance" label="Performance" rules={[{ required: true }]}>
-            <InputNumber min={0} max={100} />
-          </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Add Stage
+              {editingStageIndex !== null ? "Update Stage" : "Add Stage"}
             </Button>
           </Form.Item>
         </Form>
