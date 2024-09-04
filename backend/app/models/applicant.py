@@ -22,11 +22,11 @@ class ApplicantModel(BaseModel):
     userId: str
 
 class ApplicantCreateModel(BaseModel):
-    name: str
-    status: str
-    strength: int
+    name: Optional[str] = None
+    status: Optional[str] = None
+    strength: Optional[int] = None
     imageUrl: Optional[str] = None
-    year: int
-    major: str
-    gender: str
+    year: Optional[int] = None
+    major: Optional[str] = None
+    gender: Optional[str] = None
     summary: Optional[str] = None

@@ -1,5 +1,6 @@
-import CurrentUser from './current-user'
+import React from 'react'
 import { Layout, Space} from "antd"
+import CurrentUser from './current-user'
 
 const Header = () => {
   const headerStyles: React.CSSProperties = {
@@ -13,13 +14,13 @@ const Header = () => {
     zIndex: 999,
   };
   
-   return (
-     <Layout.Header style={headerStyles}>
-        <Space align="center" size="middle">
-          <CurrentUser />
-        </Space>
-     </Layout.Header>
-   )
- }
+  return (
+    <Layout.Header style={headerStyles}>
+      <Space align="center" size="middle">
+        <CurrentUser />
+      </Space>
+    </Layout.Header>
+  )
+}
 
-export default Header 
+export default Header

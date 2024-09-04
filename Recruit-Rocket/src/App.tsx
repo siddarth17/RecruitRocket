@@ -1,10 +1,9 @@
 import { GitHubBanner, Refine, WelcomePage, Authenticated } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
-
+import { HomeOutlined, UserOutlined, BulbOutlined } from '@ant-design/icons';
 import { useNotificationProvider } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
-
 import { authProvider, dataProvider, liveProvider } from "./providers";
 import { Home, ForgotPassword, Login, Register, ApplicantList, ApplicantEditPage, Values } from "./pages";
 import routerBindings, {
@@ -41,15 +40,31 @@ function App() {
               authProvider={authProvider}
               resources={[
                 {
+                  name: "dashboard",
+                  list: "/",
+                  meta: {
+                    label: "Home",
+                    icon: <HomeOutlined />,
+                  },
+                },
+                {
                   name: "applicants",
                   list: "/applicants",
                   create: "/applicants/create",
                   edit: "/applicants/edit/:id",
                   show: "/applicants/show/:id",
+                  meta: {
+                    label: "Applicants",
+                    icon: <UserOutlined />,
+                  },
                 },
                 {
                   name: "values",
                   list: "/values",
+                  meta: {
+                    label: "Values",
+                    icon: <BulbOutlined />,
+                  },
                 },
               ]}
               options={{

@@ -1,19 +1,12 @@
-import React, { useState, useCallback } from 'react'
-import CustomAvatar from '../custom-avatar'
+import React from 'react'
 import { useGetIdentity, useLogout } from '@refinedev/core'
 import { Popover, Button } from 'antd'
 import { Text } from '../text'
-import { SettingOutlined, LogoutOutlined } from '@ant-design/icons'
-import { AccountSettings } from "./account-settings";
+import { LogoutOutlined } from '@ant-design/icons'
 
 const CurrentUser = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { data: user } = useGetIdentity<{id: string, name: string, email: string, avatarUrl?: string}>();
+  const { data: user } = useGetIdentity<{id: string, name: string, email: string}>();
   const { mutate: logout } = useLogout();
-
-  const handleSettingsClick = useCallback(() => {
-    setIsOpen(true);
-  }, []);
 
   const content = (
     <div style={{
@@ -32,15 +25,6 @@ const CurrentUser = () => {
       }}>
         <Button
           style={{ textAlign: 'left' }}
-          icon={<SettingOutlined />}
-          type="text"
-          block
-          onClick={handleSettingsClick}
-        >
-          Account Settings
-        </Button>
-        <Button
-          style={{ textAlign: 'left' }}
           icon={<LogoutOutlined />}
           type="text"
           block
@@ -53,29 +37,15 @@ const CurrentUser = () => {
   );
 
   return (
-    <>
-      <Popover
-        placement="bottomRight"
-        trigger="click"
-        overlayInnerStyle={{ padding: 0 }}
-        overlayStyle={{ zIndex: 999 }}
-        content={content}
-      >
-        <CustomAvatar
-          name={user?.name}
-          src={user?.avatarUrl}
-          size="default"
-          style={{ cursor: 'pointer'}}
-        />
-      </Popover>
-      {user && (
-        <AccountSettings
-          opened={isOpen}
-          setOpened={setIsOpen}
-          user={user}
-        />
-      )}
-    </>
+    <Popover
+      placement="bottomRight"
+      trigger="click"
+      overlayInnerStyle={{ padding: 0 }}
+      overlayStyle={{ zIndex: 999 }}
+      content={content}
+    >
+      <Button type="link">{user?.name}</Button>
+    </Popover>
   );
 };
 

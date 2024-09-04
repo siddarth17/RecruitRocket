@@ -227,6 +227,34 @@ async def delete_stage(applicant_id: str, stage_index: int, current_user: UserIn
         logger.error(f"Error deleting stage: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"An error occurred while deleting the stage: {str(e)}")
 
+@router.put("/{applicant_id}", response_model=ApplicantModel)
+async def update_applicant(
+    applicant_id: str, 
+    applicant_update: ApplicantCreateModel, 
+    current_user: UserInDB = Depends(get_current_user)
+):
+    logger.info(f"Updating applicant {applicant_id} for user: {current_user.id}")
+    try:
+        collection = await get_applicants_collection()
+        
+        # Prepare the update data
+        update_data = applicant_update.dict(exclude_unset=True)
+        
+        # Perform the update
+        result = await collection.find_one_and_update(
+            {"_id": ObjectId(applicant_id), "userId": str(current_user.id)},
+            {"$set": update_data},
+            return_document=True
+        )
+        
+        if result:
+            return ApplicantModel(**{**result, "id": str(result["_id"])})
+        else:
+            raise HTTPException(status_code=404, detail="Applicant not found")
+    except Exception as e:
+        logger.error(f"Error updating applicant: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"An error occurred while updating the applicant: {str(e)}")
+
 # @router.post("/bulk", response_model=List[ApplicantModel])
 # async def bulk_create_applicants(file: UploadFile = File(...), current_user: UserInDB = Depends(get_current_user)):
 #     logger.info(f"Attempting bulk create applicants for user: {current_user.id}")
