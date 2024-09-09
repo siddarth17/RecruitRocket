@@ -304,6 +304,9 @@ async def generate_ai_evaluation(applicant_id: str, current_user: UserInDB = Dep
 
     evaluation = response.choices[0].message.content.strip()
 
+    evaluation = re.sub(r'```(?:html)?\n?', '', evaluation)
+    evaluation = evaluation.replace('```', '')
+
     return {"evaluation": evaluation}
 
 
