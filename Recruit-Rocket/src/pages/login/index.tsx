@@ -1,7 +1,8 @@
 import { useLogin, useNavigation } from "@refinedev/core";
 import { AuthPage } from "@refinedev/antd";
 import { useState } from "react";
-import { Alert } from "antd";
+import { Alert, Typography } from "antd";
+const { Title } = Typography;
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -32,6 +33,14 @@ export const Login = () => {
         formProps={{
           onFinish: handleLogin,
         }}
+        renderContent={(content: React.ReactNode) => (
+          <div>
+            <Title level={3} style={{ color: '#1890ff', fontWeight: 'bold', textAlign: 'center', marginBottom: '24px' }}>
+              Recruit Rocket
+            </Title>
+            {content}
+          </div>
+        )}
       />
       {errorMessage && (
         <div
