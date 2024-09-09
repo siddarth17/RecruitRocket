@@ -18,6 +18,7 @@ import Layout from "./components/layout"
 import { resources } from "./config/resources";
 import Create from "./pages/company/create";
 import { useState } from "react";
+import { NotificationProvider } from "@refinedev/core";
 
 function App() {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
@@ -35,7 +36,6 @@ function App() {
             <Refine
               dataProvider={dataProvider}
               liveProvider={liveProvider}
-              notificationProvider={useNotificationProvider}
               routerProvider={routerBindings}
               authProvider={authProvider}
               resources={[

@@ -13,7 +13,7 @@ interface CreateApplicantProps {
   
     const onFinish = (values: any) => {
       const newApplicant: Applicant = {
-        id: Math.floor(Math.random() * 1000000).toString(), // Generate a smaller, string ID
+        id: Math.floor(Math.random() * 1000000).toString(), 
         name: values.name,
         status: values.status as Applicant['status'],
         strength: Number(values.strength),
@@ -48,9 +48,6 @@ interface CreateApplicantProps {
         </Form.Item>
         <Form.Item name="strength" label="Strength" rules={[{ required: true }]}>
           <InputNumber min={0} max={100} />
-        </Form.Item>
-        <Form.Item name="imageUrl" label="Image URL" rules={[{ required: true }]}>
-          <Input />
         </Form.Item>
         <Form.Item name="year" label="Year" rules={[{ required: true }]}>
           <InputNumber min={1} max={5} />

@@ -255,6 +255,58 @@ async def update_applicant(
         logger.error(f"Error updating applicant: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"An error occurred while updating the applicant: {str(e)}")
 
+@router.post("/{applicant_id}/ai-evaluation", response_model=dict)
+async def generate_ai_evaluation(applicant_id: str, current_user: UserInDB = Depends(get_current_user)):
+    applicants_collection = await get_applicants_collection()
+    applicant = await applicants_collection.find_one({"_id": ObjectId(applicant_id), "userId": str(current_user.id)})
+    
+    if not applicant:
+        raise HTTPException(status_code=404, detail="Applicant not found")
+
+    # Fetch company values
+    db = await get_database()
+    company_values = await db.company_values.find_one({"userId": str(current_user.id)})
+    values = company_values['values'] if company_values else []
+
+    # Prepare the prompt for OpenAI
+    prompt = f"""
+    Evaluate the following applicant based on their summary, stage notes, and the company values:
+
+    Applicant Summary: {applicant.get('summary', 'No summary provided')}
+
+    Stage Notes:
+    {' '.join([f"{stage.get('stage_name', 'Unnamed Stage')}: {stage.get('notes', 'No notes')}" for stage in applicant.get('stages', [])])}
+
+    Company Values:
+    {', '.join(values)}
+
+    Please provide a comprehensive evaluation of the applicant in the following format:
+    <h3>1. Summary Analysis:</h3>
+    <p>[Detailed analysis of the applicant's summary, highlighting strengths and potential weaknesses]</p>
+
+    <h3>2. Stage Performance:</h3>
+    <p>[Summarize the applicant's performance across all stages, noting strengths and areas for improvement]</p>
+
+    <h3>3. Alignment with Company Values:</h3>
+    {' '.join([f"<h4>{value}:</h4><p>[Detailed evaluation of the applicant's alignment with this value]</p>" for value in values])}
+
+    <h3>4. Conclusion:</h3>
+    <p>[Provide an overall assessment of the applicant's fit for the company, considering all the above factors]</p>
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are an AI assistant that evaluates job applicants. Provide your evaluation in HTML format as specified."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    evaluation = response.choices[0].message.content.strip()
+
+    return {"evaluation": evaluation}
+
+
 # @router.post("/bulk", response_model=List[ApplicantModel])
 # async def bulk_create_applicants(file: UploadFile = File(...), current_user: UserInDB = Depends(get_current_user)):
 #     logger.info(f"Attempting bulk create applicants for user: {current_user.id}")

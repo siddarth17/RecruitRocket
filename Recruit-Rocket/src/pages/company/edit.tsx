@@ -2,11 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Edit, useForm } from '@refinedev/antd';
 import { Row, Col, Card, Button, Modal, Form, Input, InputNumber, Select, Table, message, Space } from 'antd';
-import { EditOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import { Applicant, Stage } from '@/graphql/types';
 import api from '@/api';
 
 const { TextArea } = Input;
+
+const AIEvaluation: React.FC<{ evaluation: string }> = ({ evaluation }) => {
+  return (
+    <Card title="AI-Generated Evaluation">
+      <div dangerouslySetInnerHTML={{ __html: evaluation }} />
+    </Card>
+  );
+};
 
 const ApplicantEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +23,8 @@ const ApplicantEditPage: React.FC = () => {
   const [isSummaryModalVisible, setIsSummaryModalVisible] = useState(false);
   const [isStageModalVisible, setIsStageModalVisible] = useState(false);
   const [editingStageIndex, setEditingStageIndex] = useState<number | null>(null);
+  const [aiEvaluation, setAiEvaluation] = useState<string>('');
+  const [isGeneratingEvaluation, setIsGeneratingEvaluation] = useState(false);
 
   const { formProps, saveButtonProps } = useForm<Applicant>({
     redirect: false,
@@ -95,6 +105,20 @@ const ApplicantEditPage: React.FC = () => {
     }
   };
 
+  const generateAIEvaluation = async () => {
+    setIsGeneratingEvaluation(true);
+    try {
+      const response = await api.post(`/applicants/${id}/ai-evaluation`);
+      setAiEvaluation(response.data.evaluation);
+      message.success('AI evaluation generated successfully');
+    } catch (error) {
+      console.error('Failed to generate AI evaluation:', error);
+      message.error('Failed to generate AI evaluation');
+    } finally {
+      setIsGeneratingEvaluation(false);
+    }
+  };
+
   const columns = [
     {
       title: 'Stage Name',
@@ -167,6 +191,25 @@ const ApplicantEditPage: React.FC = () => {
               extra={<Button icon={<PlusOutlined />} onClick={() => setIsStageModalVisible(true)}>Add Stage</Button>}
             >
               <Table dataSource={applicant.stages} columns={columns} rowKey="stage_name" />
+            </Card>
+            <Card
+              style={{ marginTop: 16 }}
+              title="AI-Generated Evaluation"
+              extra={
+                <Button 
+                  icon={<SyncOutlined spin={isGeneratingEvaluation} />} 
+                  onClick={generateAIEvaluation}
+                  loading={isGeneratingEvaluation}
+                >
+                  {isGeneratingEvaluation ? 'Generating...' : 'Generate Evaluation'}
+                </Button>
+              }
+            >
+              {aiEvaluation ? (
+                <div dangerouslySetInnerHTML={{ __html: aiEvaluation.replace('<h2>AI-Generated Evaluation</h2>', '') }} />
+              ) : (
+                <p>Click the button to generate an AI evaluation.</p>
+              )}
             </Card>
           </Col>
         </Row>

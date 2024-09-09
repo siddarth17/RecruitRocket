@@ -17,6 +17,10 @@ export const ApplicantList: React.FC<React.PropsWithChildren> = ({ children }) =
   const { data: user } = useGetIdentity<{id: string, name: string, email: string}>();
   const { push } = useNavigation();
 
+  const capitalizeFirstLetter = (string: string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     fetchApplicants();
   }, [user]);
@@ -98,7 +102,7 @@ export const ApplicantList: React.FC<React.PropsWithChildren> = ({ children }) =
           <Table.Column<Applicant>
             dataIndex="status"
             title="Status"
-            render={(value) => <Text>{value}</Text>}
+            render={(value) => <Text>{capitalizeFirstLetter(value)}</Text>}
           />
           <Table.Column<Applicant>
             dataIndex="stages"
