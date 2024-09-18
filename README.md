@@ -27,6 +27,7 @@ Containerized Deployment: Fully containerized using Docker to ensure smooth coll
 
 
 
+
 **Usage**
 
 Login: Access the dashboard after authenticating using JWT.
