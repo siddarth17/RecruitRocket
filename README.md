@@ -26,16 +26,25 @@ Containerized Deployment: Fully containerized using Docker to ensure smooth coll
 Tech Stack
 
 Frontend: React, Refine
+
 Backend: FastAPI, GraphQL
+
 Database: MongoDB
+
 Authentication: JWT (JSON Web Token)
+
 Containerization: Docker
+
 Deployment: Vercel
+
 Real-time Sync: Refine hooks, Live Provider
 
 Usage
 
 Login: Access the dashboard after authenticating using JWT.
+
 Upload CSV: Upload CSV files to bulk import applicant profiles.
+
 Manage Applicants: View, update, and score applicants' details and performance based on customizable rubrics.
+
 Real-time Updates: The dashboard updates automatically with any changes in applicant data or statuses.
