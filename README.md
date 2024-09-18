@@ -37,3 +37,7 @@ Upload CSV: Upload CSV files to bulk import applicant profiles.
 Manage Applicants: View, update, and score applicants' details and performance based on customizable rubrics.
 
 Real-time Updates: The dashboard updates automatically with any changes in applicant data or statuses.
+
+<img width="1503" alt="Screenshot 2024-09-17 at 11 15 10 PM" src="https://github.com/user-attachments/assets/bb70009a-dd2d-40cf-b6f6-9c4c7a99aeff">
+<img width="1512" alt="Screenshot 2024-09-17 at 11 15 32 PM" src="https://github.com/user-attachments/assets/87650dda-cf2d-412c-91a8-54b095a1e80c">
+<img width="1510" alt="Screenshot 2024-09-17 at 11 16 45 PM" src="https://github.com/user-attachments/assets/84fca6c4-5dde-45ff-a047-ce267f684124">
