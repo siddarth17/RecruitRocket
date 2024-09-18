@@ -1,5 +1,5 @@
 
-# Recruit-Rocket
+# Recruit Rocket
 
 Recruit Rocket is an AI-powered CRM application designed to streamline the recruiting process for organizations. It provides features to track applicant statistics, update applicants' profiles and performance notes, generate AI-driven summaries based on organizational rubrics and values, and manage the application process effectively. Recruit Rocket is currently being used by various USC clubs to enhance their recruiting processes.
 
