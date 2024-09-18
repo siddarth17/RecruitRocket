@@ -23,21 +23,9 @@ Scalable Data Storage: Uses MongoDB for efficient and scalable storage of applic
 
 Containerized Deployment: Fully containerized using Docker to ensure smooth collaboration and deployment.
 
-Tech Stack
+Tech Stack: React, Refine, FastAPI, GraphQL, MongoDB, Docker, Vercel
 
-Frontend: React, Refine
 
-Backend: FastAPI, GraphQL
-
-Database: MongoDB
-
-Authentication: JWT (JSON Web Token)
-
-Containerization: Docker
-
-Deployment: Vercel
-
-Real-time Sync: Refine hooks, Live Provider
 
 Usage
 
