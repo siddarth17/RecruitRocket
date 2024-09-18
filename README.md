@@ -1,9 +1,9 @@
 
 # Recruit-Rocket
 
-Recruit Rocket is an AI-powered CRM application designed to streamline the recruiting process for organizations. It provides features to track applicant statistics, update applicants' profile and performance notes, generate AI-driven summaries based on organizational rubrics and values, and manage the application process effectively. Recruit Rocket is currently being used by various USC clubs to enhance their recruiting processes.
+Recruit Rocket is an AI-powered CRM application designed to streamline the recruiting process for organizations. It provides features to track applicant statistics, update applicants' profiles and performance notes, generate AI-driven summaries based on organizational rubrics and values, and manage the application process effectively. Recruit Rocket is currently being used by various USC clubs to enhance their recruiting processes.
 
-Features
+**Features**
 
 AI-powered Summaries: Generate applicant summaries based on the organization's rubrics and values.
 
@@ -23,11 +23,11 @@ Scalable Data Storage: Uses MongoDB for efficient and scalable storage of applic
 
 Containerized Deployment: Fully containerized using Docker to ensure smooth collaboration and deployment.
 
-Tech Stack: React, Refine, FastAPI, GraphQL, MongoDB, Docker, Vercel
+**Tech Stack**: React, Refine, FastAPI, GraphQL, MongoDB, Docker, Vercel
 
 
 
-Usage
+**Usage**
 
 Login: Access the dashboard after authenticating using JWT.
 
