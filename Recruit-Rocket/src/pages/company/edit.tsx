@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Edit, useForm } from '@refinedev/antd';
 import { Row, Col, Card, Button, Modal, Form, Input, InputNumber, Select, Table, message, Space } from 'antd';
 import { EditOutlined, PlusOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import { Applicant, Stage } from '@/graphql/types';
 import api from '@/api';
+import { FormInstance } from 'antd/lib/form';
 
 const { TextArea } = Input;
 
@@ -25,6 +26,8 @@ const ApplicantEditPage: React.FC = () => {
   const [editingStageIndex, setEditingStageIndex] = useState<number | null>(null);
   const [aiEvaluation, setAiEvaluation] = useState<string>('');
   const [isGeneratingEvaluation, setIsGeneratingEvaluation] = useState(false);
+
+  const stageFormRef = React.useRef<FormInstance>(null);
 
   const { formProps, saveButtonProps } = useForm<Applicant>({
     redirect: false,
@@ -73,6 +76,7 @@ const ApplicantEditPage: React.FC = () => {
       const response = await api.post(`/applicants/${id}/stages`, values);
       setApplicant(response.data);
       setIsStageModalVisible(false);
+      stageFormRef.current?.resetFields();
       message.success('Stage added successfully');
     } catch (error) {
       console.error('Failed to add stage:', error);
@@ -87,6 +91,7 @@ const ApplicantEditPage: React.FC = () => {
       setApplicant(response.data);
       setIsStageModalVisible(false);
       setEditingStageIndex(null);
+      stageFormRef.current?.resetFields();
       message.success('Stage updated successfully');
     } catch (error) {
       console.error('Failed to update stage:', error);
@@ -188,7 +193,18 @@ const ApplicantEditPage: React.FC = () => {
           <Col xs={24} xl={12}>
             <Card
               title="Stages"
-              extra={<Button icon={<PlusOutlined />} onClick={() => setIsStageModalVisible(true)}>Add Stage</Button>}
+              extra={
+                <Button 
+                  icon={<PlusOutlined />} 
+                  onClick={() => {
+                    setEditingStageIndex(null);
+                    stageFormRef.current?.resetFields();
+                    setIsStageModalVisible(true);
+                  }}
+                >
+                  Add Stage
+                </Button>
+              }
             >
               <Table dataSource={applicant.stages} columns={columns} rowKey="stage_name" />
             </Card>
@@ -276,12 +292,20 @@ const ApplicantEditPage: React.FC = () => {
         onCancel={() => {
           setIsStageModalVisible(false);
           setEditingStageIndex(null);
+          stageFormRef.current?.resetFields();
         }}
         footer={null}
       >
         <Form 
-          onFinish={editingStageIndex !== null ? handleStageUpdate : handleStageAdd}
-          initialValues={editingStageIndex !== null ? applicant.stages[editingStageIndex] : undefined}
+            ref={stageFormRef}
+            onFinish={(values) => {
+              if (editingStageIndex !== null) {
+                handleStageUpdate(values);
+              } else {
+                handleStageAdd(values);
+              }
+            }}
+            initialValues={editingStageIndex !== null ? applicant.stages[editingStageIndex] : undefined}
         >
           <Form.Item name="stage_name" label="Stage Name" rules={[{ required: true }]}>
             <Input />
