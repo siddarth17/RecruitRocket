@@ -17,3 +17,6 @@ tmp/
 *.py[cod]
 __pycache__/
 *.so
+
+# pytest cache
+.cache/
