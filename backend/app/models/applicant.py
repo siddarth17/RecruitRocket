@@ -12,7 +12,7 @@ class ApplicantModel(BaseModel):
     id: str
     name: str
     status: str
-    strength: int
+    strength: Optional[int] = None
     stages: List[StageModel] = []
     imageUrl: Optional[str] = None
     year: int
