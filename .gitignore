@@ -1,0 +1,8 @@
+# Ignore package-lock.json
+package-lock.json
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore requirements.txt
+requirements.txt
